@@ -20,6 +20,26 @@ firebase.initializeApp(config);
 
 const db = admin.firestore();
 
+//check for empty string
+const isEmpty = (string) =>{
+  if(string.trim() === ''){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+//checks valiate email
+const isEmail = (email) => {
+  const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if(email.match(emailRegEx)){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+//get all the screams
 app.get("/screams", (req, res) => {
   db
     .collection("Screams")
@@ -43,6 +63,7 @@ app.get("/screams", (req, res) => {
     });
 });
 
+//post a new scream
 app.post("/scream", (req, res) => {
   const newScream = {
     body: req.body.body,
@@ -62,13 +83,42 @@ app.post("/scream", (req, res) => {
     });
 });
 
-//signup
+//signup route
 app.post("/signup", (req,res) => {
   const newUser ={
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     handle: req.body.handle
+  }
+
+  let errors = {};
+
+  //validate email
+  if(isEmpty(newUser.email)){
+    errors.email = 'Email must not be empty';
+  }else if(!isEmail(newUser.email)){
+    errors.email = 'Must be a valid email address';
+  }
+
+  //validate password
+  if(isEmpty(newUser.password)){
+    errors.password = 'password must not be empty'
+  }
+
+  //validate confirm password
+  if(newUser.password !== newUser.confirmPassword){
+    errors.confirmPassword = "passwords must match"
+  }
+
+  //validate handle
+  if(isEmpty(newUser.handle)){
+    errors.handle = "handle must not be empty"
+  }
+
+  //return if any validation errors
+  if(Object.keys(errors).length > 0){
+    return res.status(400).json(errors);
   }
 
   let token;
@@ -84,7 +134,7 @@ app.post("/signup", (req,res) => {
         .createUserWithEmailAndPassword(newUser.email, newUser.password)
       }
     })
-    .then((data) => {
+    .then(data => {
       userId = data.user.uid;
       return data.user.getIdToken();
     })
@@ -111,5 +161,42 @@ app.post("/signup", (req,res) => {
       } 
     })
 });
+
+//login
+app.post('/login' , (req,res) =>{
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  }
+
+  //validation
+  let errors = {};
+  if(isEmpty(user.email)){
+    errors.email = "Email Must not be empty";
+  }
+  if(isEmpty(user.password)){
+    errors.password = "password must not be empty";
+  }
+
+  if(Object.keys(errors).length > 0){
+    return res.status(400).json(errors);
+  }
+
+  firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+    .then(data =>{
+      return data.getIdToken();
+    })
+    .then(token =>{
+      return res.json({token})
+    })
+    .catch(err =>{
+      if(err.code === 'auth/wrong-password'){
+       return res.status(403).json({general:'Wrong credentials, plesase try again'}) 
+      }else{
+        return res.status(500).json({error: err.code})
+      }
+   
+    })
+})
 
 exports.api = functions.region('us-east1').https.onRequest(app);
