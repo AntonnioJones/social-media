@@ -63,8 +63,20 @@ app.get("/screams", (req, res) => {
     });
 });
 
+const FBAuth = (req, res, next) =>{
+  let idToken;
+  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
+    idToken = req.headers.authorization.split('Bearer ')[1];
+  }else{
+    console.error('No token found');
+    return res.status(403).json({error: 'Unauthorized'});
+  }
+
+  
+}
+
 //post a new scream
-app.post("/scream", (req, res) => {
+app.post("/scream", FBAuth, (req, res) => {
   const newScream = {
     body: req.body.body,
     userHandle: req.body.userHandle,
@@ -183,13 +195,13 @@ app.post('/login' , (req,res) =>{
   }
 
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
-    .then(data =>{
-      return data.getIdToken();
+    .then((data) =>{
+      return data.user.getIdToken();
     })
-    .then(token =>{
+    .then((token) =>{
       return res.json({token})
     })
-    .catch(err =>{
+    .catch((err) =>{
       if(err.code === 'auth/wrong-password'){
        return res.status(403).json({general:'Wrong credentials, plesase try again'}) 
       }else{
