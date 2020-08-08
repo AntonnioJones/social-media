@@ -73,17 +73,17 @@ const FBAuth = (req, res, next) =>{
   }
 
   admin.auth().verifyIdToken(idToken)
-    .then((decodedToken) => {
+    .then(decodedToken => {
       req.user = decodedToken;
       return db.collection('users')
         .where('userId', '==', req.user.uid)
         .limit(1)
         .get();
     })
-    .then((data) =>{
+    .then(data =>{
       req.user.handle = data.docs[0].data().handle;
     })
-    .catch((err) =>{
+    .catch(err =>{
       console.error('Error while verifying token', err);
       return res.status(403).json(err);
     })
