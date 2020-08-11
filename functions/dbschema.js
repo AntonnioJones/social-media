@@ -1,12 +1,21 @@
 let db = {
+    users:[
+        {
+            userId: '',
+            email: '',
+            handle: '',
+            createdAt: '',
+            imageUrl: '',
+            bio: '',
+            website: '',
+            location: '',
+        }
+    ],
     screams:[
         {
             body: "New Scream",
             userHandle: "new",
-            createdAt: {
-                "_seconds": 1596235771,
-                "_nanoseconds": 992000000
-            },
+            createdAt: '',
             likeCount: 5,
             commentCount: 2
         }
