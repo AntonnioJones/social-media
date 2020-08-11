@@ -2,6 +2,7 @@ const { admin, db } = require("../util/admin");
 const config = require("../util/config");
 const { validateSignupData, validateLoginData, reduceUserDetails } = require("../util/validators");
 const firebase = require("firebase");
+const { UserRecordMetadata } = require("firebase-functions/lib/providers/auth");
 firebase.initializeApp(config);
 
 exports.signup = (req, res) => {
@@ -154,3 +155,27 @@ exports.uploadImage = (req, res) => {
 
   busboy.end(req.rawBody);
 };
+
+//get own user data
+exports.getAuthenticatedUser = (req, res) => {
+  let userData = {};
+  db.doc(`/users/${req.user.handle}`)
+    .get()
+    .then(doc => {
+      if(doc.exists){
+        userData.userCredentials = doc.data();
+        return db.collection('likes').where('userHandle', '===', req.user.handle).get();
+      }
+    })
+    .then(data => {
+      userData.likes = [];
+      data.forEach(doc => {
+        userData.likes.push(doc.data());
+      });
+      return res.json(userData);
+    })
+    .catch(err => {
+      console.log(error(err));
+      return res.status(500).json({error: err.code});
+    })
+}

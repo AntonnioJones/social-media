@@ -21,3 +21,27 @@ let db = {
         }
     ]
 }
+
+const userDetails = {
+    //redux data
+    credentials: {
+        userId: '',
+            email: '',
+            handle: '',
+            createdAt: '',
+            imageUrl: '',
+            bio: '',
+            website: '',
+            location: '', 
+    },
+    likes: [
+        {
+            userHandle: "user",
+            screamId: "dafljdsklfjdkslfj"
+        },
+        {
+            userHandle: "user",
+            screamId: "kdslfjkdlsjfkd"
+        }
+    ]
+}

@@ -39,3 +39,4 @@ exports.postOneScream = (req, res) => {
       console.error(err);
     });
 };
+
