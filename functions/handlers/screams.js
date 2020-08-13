@@ -42,14 +42,19 @@ exports.postOneScream = (req, res) => {
 
 exports.getScream = (req, res) => {
   let screamData = {};
-  db.doc(`/screams/${req.params.screamId}`).get()
-    .then(doc => {
+  db.doc(`/Screams/${req.params.screamId}`)
+    .get()
+    .then((doc) => {
       if(!doc.exists){
         return res.status(400).json({error: 'Scream not found'});
       }else{
         screamData = doc.data();
         screamData.screamId = doc.id;
-        return db.collection('comments').where('screamId', '==', req.params.screamId).get();
+        return db
+                .collection('comments')
+                .orderBy('createdAt', 'desc')
+                .where('screamId', '==', req.params.screamId)
+                .get();
       }
     })
     .then((data) =>{
