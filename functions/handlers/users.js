@@ -1,6 +1,10 @@
 const { admin, db } = require("../util/admin");
 const config = require("../util/config");
-const { validateSignupData, validateLoginData, reduceUserDetails } = require("../util/validators");
+const {
+  validateSignupData,
+  validateLoginData,
+  reduceUserDetails,
+} = require("../util/validators");
 const firebase = require("firebase");
 const { UserRecordMetadata } = require("firebase-functions/lib/providers/auth");
 firebase.initializeApp(config);
@@ -92,18 +96,19 @@ exports.login = (req, res) => {
 };
 
 //Add user details
-exports.addUserDetails = (req, res) =>{
+exports.addUserDetails = (req, res) => {
   let userDetails = reduceUserDetails(req.body);
 
-  db.doc(`/users/${req.user.handle}`).update(userDetails)
+  db.doc(`/users/${req.user.handle}`)
+    .update(userDetails)
     .then(() => {
-      return res.json({message: 'Details added successfully'})
+      return res.json({ message: "Details added successfully" });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
-      return res.status(500).json({error: err.code})
-    })
-}
+      return res.status(500).json({ error: err.code });
+    });
+};
 
 //upload a user profile
 exports.uploadImage = (req, res) => {
@@ -157,16 +162,20 @@ exports.uploadImage = (req, res) => {
 };
 
 //get andy user's Deatail
-exports.getUserDetails = (req,res) => {
+exports.getUserDetails = (req, res) => {
   let userData = {};
   db.doc(`/users/${req.params.handle}`)
     .get()
     .then((doc) => {
-      if(doc.exists){
+      if (doc.exists) {
         userData.user = doc.data();
-        return db.collection('screams').where('userHandle', '==', req.params.handle)
-          .orderBy('createdAt', 'desc')
+        return db
+          .collection("screams")
+          .where("userHandle", "==", req.params.handle)
+          .orderBy("createdAt", "desc")
           .get();
+      } else {
+        return res.status(404).json({ error: "user not found" });
       }
     })
     .then((data) => {
@@ -179,35 +188,40 @@ exports.getUserDetails = (req,res) => {
           UserImage: doc.data().UserImage,
           likecount: doc.data().likecount,
           commentCount: doc.data().commentCount,
-          screamId: doc.id
-        })
-      })
+          screamId: doc.id,
+        });
+      });
       return res.json(userData);
     })
-    .catch((err) =>{
+    .catch((err) => {
       console.error(err);
-      return res.stats(500).json({error: err})
-    })
-}
+      return res.stats(500).json({ error: err });
+    });
+};
 
 //get own user data
 exports.getAuthenticatedUser = (req, res) => {
   let userData = {};
   db.doc(`/users/${req.user.handle}`)
     .get()
-    .then(doc => {
-      if(doc.exists){
+    .then((doc) => {
+      if (doc.exists) {
         userData.userCredentials = doc.data();
-        return db.collection('likes').where('userHandle', '===', req.user.handle).get();
+        return db
+          .collection("likes")
+          .where("userHandle", "===", req.user.handle)
+          .get();
       }
     })
-    .then(data => {
+    .then((data) => {
       userData.likes = [];
-      data.forEach(doc => {
+      data.forEach((doc) => {
         userData.likes.push(doc.data());
       });
-      return db.collection('notifications').where('recipient','==', req.user.handle)
-        .orderBy('createdAt', 'desc')
+      return db
+        .collection("notifications")
+        .where("recipient", "==", req.user.handle)
+        .orderBy("createdAt", "desc")
         .limit(10)
         .get();
     })
@@ -222,12 +236,29 @@ exports.getAuthenticatedUser = (req, res) => {
           type: doc.data().type,
           read: doc.data().read,
           notificationId: doc.id,
-        })
-      })
-      return res.json(userData)
+        });
+      });
+      return res.json(userData);
     })
     .catch((err) => {
       console.log(error(err));
-      return res.status(500).json({error: err.code});
+      return res.status(500).json({ error: err.code });
+    });
+};
+
+exports.markNotificationsRead = (req, res) => {
+  let batch = db.batch();
+  req.body.forEach((notification) => {
+    const notification = db.doc(`/notifications/${notificationId}`);
+    batch.update(notification, { read: true });
+  });
+  batch
+    .commit()
+    .then(() => {
+      return res.json({ message: "Notifications marked read" });
     })
-}
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
