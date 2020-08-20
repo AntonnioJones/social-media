@@ -36,8 +36,8 @@ app.post("/login", login); //login
 app.post("/user/image", FBAuth, uploadImage); //upload images
 app.post("/user", FBAuth, addUserDetails); //add details to user profile
 app.get("/user", FBAuth, getAuthenticatedUser); // returns a user
-app.get("/user/:handle", getUserDetails);
-app.post("/notifications", FBAuth, markNotificationsRead);
+app.get("/user/:handle", getUserDetails); // get user details
+app.post("/notifications", FBAuth, markNotificationsRead); //notifications
 
 exports.api = functions.region("us-east1").https.onRequest(app);
 

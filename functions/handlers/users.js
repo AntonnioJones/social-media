@@ -185,7 +185,7 @@ exports.getUserDetails = (req, res) => {
           body: doc.data().body,
           createdAt: doc.data().createdAt,
           userHandle: doc.data().userHandle,
-          UserImage: doc.data().UserImage,
+          userImage: doc.data().userImage,
           likecount: doc.data().likecount,
           commentCount: doc.data().commentCount,
           screamId: doc.id,
@@ -195,7 +195,7 @@ exports.getUserDetails = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.stats(500).json({ error: err });
+      return res.status(500).json({ error: err });
     });
 };
 
