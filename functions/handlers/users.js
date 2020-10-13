@@ -199,17 +199,17 @@ exports.getUserDetails = (req, res) => {
     });
 };
 
-//get own user data
+//get own details
 exports.getAuthenticatedUser = (req, res) => {
   let userData = {};
   db.doc(`/users/${req.user.handle}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
-        userData.userCredentials = doc.data();
+        userData.credentials = doc.data();
         return db
           .collection("likes")
-          .where("userHandle", "===", req.user.handle)
+          .where("userHandle", "==", req.user.handle)
           .get();
       }
     })
@@ -241,7 +241,7 @@ exports.getAuthenticatedUser = (req, res) => {
       return res.json(userData);
     })
     .catch((err) => {
-      console.log(error(err));
+      console.error(err);
       return res.status(500).json({ error: err.code });
     });
 };
