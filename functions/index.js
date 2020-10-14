@@ -26,7 +26,7 @@ app.get("/screams", getAllScreams); //get all screams
 app.post("/scream", FBAuth, postOneScream); //post one scream
 app.get("/scream/:screamId", getScream); //get one scream
 app.delete("/scream/:screamId", FBAuth, deleteScream); //delete a scream
-app.post("/scram/:screamId/comment", FBAuth, commentOnScream); //comment on a scream
+app.post("/scream/:screamId/comment", FBAuth, commentOnScream); //comment on a scream
 app.get("/scream/:screamId/like", FBAuth, likeScream); //like a scream
 app.get("/scream/:screamId/unlike", FBAuth, unlikeScream); //unlike a scream
 
