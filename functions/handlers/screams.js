@@ -92,7 +92,7 @@ exports.commentOnScream = (req, res) => {
   };
   console.log(newComment);
 
-  db.doc(`/screams/${req.params.screamId}`)
+  db.doc(`/Screams/${req.params.screamId}`)
     .get()
     .then((doc) => {
       if (!doc.exists) {
@@ -119,7 +119,7 @@ exports.likeScream = (req, res) => {
     .where('screamId', '==', req.params.screamId)
     .limit(1);
 
-  const screamDocument = db.doc(`/screams/${req.params.screamId}`);
+  const screamDocument = db.doc(`/Screams/${req.params.screamId}`);
 
   let screamData;
 
@@ -166,7 +166,7 @@ exports.unlikeScream = (req, res) => {
     .where('screamId', '==', req.params.screamId)
     .limit(1);
 
-  const screamDocument = db.doc(`/screams/${req.params.screamId}`);
+  const screamDocument = db.doc(`/Screams/${req.params.screamId}`);
 
   let screamData;
 

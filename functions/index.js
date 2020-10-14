@@ -21,23 +21,23 @@ const {
   markNotificationsRead,
 } = require("./handlers/users");
 
-//screams route
-app.get("/screams", getAllScreams); //get all screams
-app.post("/scream", FBAuth, postOneScream); //post one scream
-app.get("/scream/:screamId", getScream); //get one scream
-app.delete("/scream/:screamId", FBAuth, deleteScream); //delete a scream
-app.post("/scream/:screamId/comment", FBAuth, commentOnScream); //comment on a scream
-app.get("/scream/:screamId/like", FBAuth, likeScream); //like a scream
-app.get("/scream/:screamId/unlike", FBAuth, unlikeScream); //unlike a scream
+// Scream routes
+app.get('/screams', getAllScreams);
+app.post('/scream', FBAuth, postOneScream);
+app.get('/scream/:screamId', getScream);
+app.delete('/scream/:screamId', FBAuth, deleteScream);
+app.get('/scream/:screamId/like', FBAuth, likeScream);
+app.get('/scream/:screamId/unlike', FBAuth, unlikeScream);
+app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
 
-//users routes
-app.post("/signup", signup); //sign up
-app.post("/login", login); //login
-app.post("/user/image", FBAuth, uploadImage); //upload images
-app.post("/user", FBAuth, addUserDetails); //add details to user profile
-app.get("/user", FBAuth, getAuthenticatedUser); // returns a user
-app.get("/user/:handle", getUserDetails); // get user details
-app.post("/notifications", FBAuth, markNotificationsRead); //notifications
+// users routes
+app.post('/signup', signup);
+app.post('/login', login);
+app.post('/user/image', FBAuth, uploadImage);
+app.post('/user', FBAuth, addUserDetails);
+app.get('/user', FBAuth, getAuthenticatedUser);
+app.get('/user/:handle', getUserDetails);
+app.post('/notifications', FBAuth, markNotificationsRead);
 
 exports.api = functions.region("us-east1").https.onRequest(app);
 
