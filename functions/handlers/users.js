@@ -170,7 +170,7 @@ exports.getUserDetails = (req, res) => {
       if (doc.exists) {
         userData.user = doc.data();
         return db
-          .collection("screams")
+          .collection("Screams")
           .where("userHandle", "==", req.params.handle)
           .orderBy("createdAt", "desc")
           .get();
